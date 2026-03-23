@@ -1,18 +1,28 @@
-import sys
 import pathlib
-import subprocess
 import shutil
+import subprocess
+import sys
 
 # default Ghostscript executable
 GHOSTSCRIPT = shutil.which("gswin64c") or shutil.which("gs")
 
 if not GHOSTSCRIPT:
-    print("❌ Ghostscript not found! Please install it and add gswin64c.exe to your PATH.")
+    print(
+        "❌ Ghostscript not found! Please install it and add gswin64c.exe to your PATH."
+    )
     sys.exit(1)
+
+# detect whether this GS build supports JPX (JPEG 2000) encoding
+# gs -h prints supported devices/features to stderr
+_gs_help = subprocess.run(
+    [GHOSTSCRIPT, "-h"], capture_output=True, text=True, errors="ignore"
+)
+_gs_help_text = (_gs_help.stdout + _gs_help.stderr).lower()
+GS_HAS_JPX = "jpx" in _gs_help_text or "jpeg2000" in _gs_help_text
 
 # Each option is: (suffix, description, extra_gs_args, pdf_version)
 # pdf_version: Ghostscript -dCompatibilityLevel value
-COMPRESSION_OPTIONS = {
+_ALL_OPTIONS = {
     "1": (
         "screen",
         "Maximum compression, very low quality — images ~72dpi",
@@ -82,9 +92,19 @@ COMPRESSION_OPTIONS = {
     ),
 }
 
+# drop jpeg2000 if this GS build can't encode it
+if not GS_HAS_JPX:
+    _ALL_OPTIONS = {k: v for k, v in _ALL_OPTIONS.items() if v[0] != "jpeg2000"}
+
+# re-number keys so the menu is always gapless (1, 2, 3, ...)
+COMPRESSION_OPTIONS = {str(i): v for i, v in enumerate(_ALL_OPTIONS.values(), start=1)}
+
 DEFAULT_CHOICE = "3"
 
-def compress_pdf(input_path: pathlib.Path, suffix: str, extra_args: list, pdf_version: str):
+
+def compress_pdf(
+    input_path: pathlib.Path, suffix: str, extra_args: list, pdf_version: str
+):
     output_path = input_path.with_name(f"{input_path.stem}_{suffix}.pdf")
     cmd = [
         GHOSTSCRIPT,
@@ -98,15 +118,22 @@ def compress_pdf(input_path: pathlib.Path, suffix: str, extra_args: list, pdf_ve
         str(input_path),
     ]
     try:
-        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        subprocess.run(
+            cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE
+        )
         print(f"✅ Done: '{output_path.name}'")
         return output_path
     except subprocess.CalledProcessError as e:
         stderr_text = e.stderr.decode(errors="ignore") if e.stderr else ""
         print(f"❌ Could not compress '{input_path.name}'.")
 
-        if "Could not open the file" in stderr_text or "Permission denied" in stderr_text:
-            print("  • The PDF might be open in another program (like Acrobat) or the file/folder is locked.")
+        if (
+            "Could not open the file" in stderr_text
+            or "Permission denied" in stderr_text
+        ):
+            print(
+                "  • The PDF might be open in another program (like Acrobat) or the file/folder is locked."
+            )
         elif "No such file or directory" in stderr_text:
             print("  • The PDF file wasn't found in the given path.")
         else:
@@ -114,9 +141,12 @@ def compress_pdf(input_path: pathlib.Path, suffix: str, extra_args: list, pdf_ve
             print(e)
         return None
 
+
 def main():
     if len(sys.argv) < 2:
-        print("Drag one or more PDFs onto this script or pass their paths as arguments.")
+        print(
+            "Drag one or more PDFs onto this script or pass their paths as arguments."
+        )
         sys.exit(1)
 
     valid_keys = list(COMPRESSION_OPTIONS.keys())
