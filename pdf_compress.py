@@ -27,18 +27,18 @@ COMPRESSION_OPTIONS = {
     ),
     "3": (
         "smart",
-        "Balanced compression — targets ~200dpi at 95% JPEG quality, skips images already close to target (recommended)",
+        "Balanced compression — targets ~150dpi at 85% JPEG quality, skips images already close to target (recommended)",
         [
             # use ebook as the base for non-image settings (fonts, streams, etc.)
             "-dPDFSETTINGS=/ebook",
             # color images
-            "-dColorImageResolution=200",
+            "-dColorImageResolution=150",
             "-dColorImageDownsampleType=/Bicubic",
-            "-dColorImageDownsampleThreshold=1.4",  # only resample if >280dpi
+            "-dColorImageDownsampleThreshold=1.4",  # only resample if >210dpi
             "-dColorImageFilter=/DCTEncode",
-            "-dJPEGQ=95",
+            "-dJPEGQ=85",
             # grayscale images
-            "-dGrayImageResolution=200",
+            "-dGrayImageResolution=150",
             "-dGrayImageDownsampleType=/Bicubic",
             "-dGrayImageDownsampleThreshold=1.4",
             "-dGrayImageFilter=/DCTEncode",
@@ -100,6 +100,7 @@ def compress_pdf(input_path: pathlib.Path, suffix: str, extra_args: list, pdf_ve
     try:
         subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         print(f"✅ Done: '{output_path.name}'")
+        return output_path
     except subprocess.CalledProcessError as e:
         stderr_text = e.stderr.decode(errors="ignore") if e.stderr else ""
         print(f"❌ Could not compress '{input_path.name}'.")
@@ -111,6 +112,7 @@ def compress_pdf(input_path: pathlib.Path, suffix: str, extra_args: list, pdf_ve
         else:
             print("  • An unexpected error occurred while compressing the PDF:")
             print(e)
+        return None
 
 def main():
     if len(sys.argv) < 2:
