@@ -1,43 +1,24 @@
-import sys
-import subprocess
 import pathlib
+import sys
 
-QUALITIES = ["screen", "ebook", "printer", "prepress", "default"]
-
-GHOSTSCRIPT = shutil.which("gswin64c") or shutil.which("gs")
-
-
-if not GHOSTSCRIPT:
-    print("❌ Ghostscript not found! Please install it and add gswin64c.exe to your PATH.")
-    sys.exit(1)
+from pdf_compress import COMPRESSION_OPTIONS, compress_pdf
 
 
-def compress_pdf(input_path: str, output_path: str, quality: str):
-    cmd = [
-        GHOSTSCRIPT,
-        "-sDEVICE=pdfwrite",
-        "-dCompatibilityLevel=1.4",
-        f"-dPDFSETTINGS=/{quality}",
-        "-dNOPAUSE",
-        "-dQUIET",
-        "-dBATCH",
-        f"-sOutputFile={output_path}",
-        input_path,
-    ]
-    subprocess.run(cmd, check=True)
-
-
-def process_pdf(pdf_path: str):
+def process_pdf(pdf_path: str | pathlib.Path):
     pdf_path = pathlib.Path(pdf_path)
     if not pdf_path.exists():
         print(f"❌ File not found: {pdf_path}")
         return
 
     print(f"\nProcessing: {pdf_path.name}")
-    for quality in QUALITIES:
-        output_path = pdf_path.with_name(f"{pdf_path.stem}_{quality}.pdf")
-        print(f"  • {quality:<8} → {output_path.name}")
-        compress_pdf(str(pdf_path), str(output_path), quality)
+    for key, (
+        suffix,
+        description,
+        extra_args,
+        pdf_version,
+    ) in COMPRESSION_OPTIONS.items():
+        print(f"  • [{key}] {suffix:<10} — {description}")
+        compress_pdf(pdf_path, suffix, extra_args, pdf_version)
 
     print("✅ All compression versions generated.\n")
 
