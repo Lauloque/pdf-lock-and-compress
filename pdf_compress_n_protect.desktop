@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Pdf Compress N Protect
+Comment=Run pdf_compress_n_protect.py
+Icon=text-x-python
+Exec=konsole --hold -e python3 "/media/lauloque/Fenetre/Users/Lauloque/Documents/Repositories/pdf_lock_and_compress/pdf_compress_n_protect.py" %F
+Terminal=true
+Categories=Utility;
