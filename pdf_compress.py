@@ -10,20 +10,87 @@ if not GHOSTSCRIPT:
     print("❌ Ghostscript not found! Please install it and add gswin64c.exe to your PATH.")
     sys.exit(1)
 
-# mapping from number to Ghostscript preset
+# Each option is: (suffix, description, extra_gs_args, pdf_version)
+# pdf_version: Ghostscript -dCompatibilityLevel value
 COMPRESSION_OPTIONS = {
-    "1": ("screen", "Maximum compression at trash quality, images ~72dpi"),
-    "2": ("ebook", "Hight compression at decent quality, images ~150dpi"),
-    "3": ("printer", "Medium compression at printing quality, images ~300dpi"),
+    "1": (
+        "screen",
+        "Maximum compression, very low quality — images ~72dpi",
+        ["-dPDFSETTINGS=/screen"],
+        "1.4",
+    ),
+    "2": (
+        "ebook",
+        "High compression, decent quality — images ~150dpi (aggressive, may cause quality loss)",
+        ["-dPDFSETTINGS=/ebook"],
+        "1.4",
+    ),
+    "3": (
+        "smart",
+        "Balanced compression — targets ~200dpi at 95% JPEG quality, skips images already close to target (recommended)",
+        [
+            # use ebook as the base for non-image settings (fonts, streams, etc.)
+            "-dPDFSETTINGS=/ebook",
+            # color images
+            "-dColorImageResolution=200",
+            "-dColorImageDownsampleType=/Bicubic",
+            "-dColorImageDownsampleThreshold=1.4",  # only resample if >280dpi
+            "-dColorImageFilter=/DCTEncode",
+            "-dJPEGQ=95",
+            # grayscale images
+            "-dGrayImageResolution=200",
+            "-dGrayImageDownsampleType=/Bicubic",
+            "-dGrayImageDownsampleThreshold=1.4",
+            "-dGrayImageFilter=/DCTEncode",
+        ],
+        "1.5",
+    ),
+    "4": (
+        "printer",
+        "Medium compression, print-ready quality — images ~300dpi",
+        ["-dPDFSETTINGS=/printer"],
+        "1.4",
+    ),
+    "5": (
+        "prepress",
+        "Low compression, professional quality — images ~300dpi, preserves color profiles",
+        ["-dPDFSETTINGS=/prepress"],
+        "1.4",
+    ),
+    "6": (
+        "lossless",
+        "Lossless recompression — keeps original DPI and full quality, uses ZIP/Flate instead of JPEG",
+        [
+            "-dPDFSETTINGS=/prepress",
+            "-dDownsampleColorImages=false",
+            "-dDownsampleGrayImages=false",
+            "-dDownsampleMonoImages=false",
+            "-dColorImageFilter=/FlateEncode",
+            "-dGrayImageFilter=/FlateEncode",
+        ],
+        "1.4",
+    ),
+    "7": (
+        "jpeg2000",
+        "JPEG 2000 recompression — better quality-to-size ratio than standard JPEG, images ~150dpi",
+        [
+            "-dPDFSETTINGS=/ebook",
+            "-dColorImageFilter=/JPXEncode",
+            "-dGrayImageFilter=/JPXEncode",
+        ],
+        "1.5",
+    ),
 }
 
-def compress_pdf(input_path: pathlib.Path, quality: str):
-    output_path = input_path.with_name(f"{input_path.stem}_{quality}.pdf")
+DEFAULT_CHOICE = "3"
+
+def compress_pdf(input_path: pathlib.Path, suffix: str, extra_args: list, pdf_version: str):
+    output_path = input_path.with_name(f"{input_path.stem}_{suffix}.pdf")
     cmd = [
         GHOSTSCRIPT,
         "-sDEVICE=pdfwrite",
-        "-dCompatibilityLevel=1.4",
-        f"-dPDFSETTINGS=/{quality}",
+        f"-dCompatibilityLevel={pdf_version}",
+        *extra_args,
         "-dNOPAUSE",
         "-dQUIET",
         "-dBATCH",
@@ -50,17 +117,20 @@ def main():
         print("Drag one or more PDFs onto this script or pass their paths as arguments.")
         sys.exit(1)
 
+    valid_keys = list(COMPRESSION_OPTIONS.keys())
+
     # show dialogue
-    print("Choose compression level (press Enter for default 'ebook'):")
-    for key, (preset, description) in COMPRESSION_OPTIONS.items():
-        print(f"  {key}) {preset}: {description}")
+    print("Choose compression level (press Enter for default 'smart'):")
+    for key, (suffix, description, _, _) in COMPRESSION_OPTIONS.items():
+        marker = " [default]" if key == DEFAULT_CHOICE else ""
+        print(f"  {key}) {suffix}{marker}: {description}")
 
-    choice = input("Your choice [1-3]: ").strip()
+    choice = input(f"Your choice [{valid_keys[0]}–{valid_keys[-1]}]: ").strip()
     if choice not in COMPRESSION_OPTIONS:
-        choice = "2"  # default to ebook
+        choice = DEFAULT_CHOICE
 
-    preset, description = COMPRESSION_OPTIONS[choice]
-    print(f"\nSelected preset: {preset} ({description})\n")
+    suffix, description, extra_args, pdf_version = COMPRESSION_OPTIONS[choice]
+    print(f"\nSelected: {suffix} — {description}\n")
 
     # process all PDFs
     for pdf_path in sys.argv[1:]:
@@ -68,7 +138,7 @@ def main():
         if not pdf_path.exists() or pdf_path.suffix.lower() != ".pdf":
             print(f"⚠ Skipping '{pdf_path}': not a PDF or does not exist")
             continue
-        compress_pdf(pdf_path, preset)
+        compress_pdf(pdf_path, suffix, extra_args, pdf_version)
 
 
 if __name__ == "__main__":
