@@ -1,9 +1,15 @@
 [project]
 name = "pdf-lock-and-compress"
 version = "0.1.0"
-description = "Add your description here"
+description = "Drag-and-drop PDF compression and password protection scripts using Ghostscript and pypdf"
 readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.11"
 dependencies = [
-    "pypdf2>=3.0.1",
+    "pypdf>=4.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pypdf>=4.0.0",
 ]
