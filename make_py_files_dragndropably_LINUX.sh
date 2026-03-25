@@ -24,7 +24,11 @@ for py_file in "${py_files[@]}"; do
     display_name=$(echo "$base_name" | sed 's/[_-]/ /g' | sed 's/\b\(.\)/\u\1/g')
 
     # Desktop file path
-    desktop_file="${base_name}.desktop"
+    if [ "$base_name" == "main" ]; then
+        desktop_file="pdf_compress.desktop"
+    else
+        desktop_file="${base_name}.desktop"
+    fi
 
     # Get absolute path to the Python script
     absolute_path="${CURRENT_DIR}/${py_file}"
