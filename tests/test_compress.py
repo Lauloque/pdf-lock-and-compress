@@ -3,7 +3,7 @@ import os
 import pathlib
 import subprocess
 
-import functions.compress_pdf
+from functions.compress_pdf import compress_pdf
 
 
 def cleanup_compressed_files():
@@ -13,9 +13,7 @@ def cleanup_compressed_files():
 
 
 def test_compress_one_file():
-    functions.compress_pdf.compress_pdf(
-        pathlib.Path("tests/Sample.pdf"), "compressed", [], "1.4"
-    )
+    compress_pdf(pathlib.Path("tests/Sample.pdf"), "compressed", [], "1.4")
     assert os.path.exists("tests/Sample_compressed.pdf")
     cleanup_compressed_files()
 

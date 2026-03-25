@@ -8,6 +8,8 @@ from constants import (
     GHOSTSCRIPT,
 )
 from functions.compress_pdf import compress_pdf
+from functions.get_password import get_password
+from functions.protect_pdf import protect_pdf
 from pdf_test_compression_levels import compress_pdf_all_levels
 
 
@@ -17,12 +19,6 @@ def main():
             "❌ Ghostscript not found! Please install it and add its executable to your PATH."
         )
         sys.exit(1)
-
-    # if len(sys.argv) < 2:
-    #     print(
-    #         "Drag one or more PDFs onto this script or pass their paths as arguments."
-    #     )
-    #     sys.exit(1)
 
     parser = argparse.ArgumentParser(
         description="Compress PDF files by drag and drop or pass their paths as arguments.",
@@ -38,6 +34,12 @@ def main():
         "--test-compression-levels",
         action="store_true",
         help="Test all compression levels (slow; best used with a small number of files)",
+    )
+    parser.add_argument(
+        "-p",
+        "--protect",
+        action="store_true",
+        help="Protect the PDF with a password",
     )
 
     args = parser.parse_args()
@@ -62,6 +64,10 @@ def main():
 
         suffix, description, extra_args, pdf_version = COMPRESSION_OPTIONS[choice]
         print(f"\nSelected: {suffix} — {description}\n")
+    if args.protect:
+        password = get_password()
+    else:
+        password = ""
 
     # process all PDFs
     for file_path in args.files:
@@ -73,12 +79,10 @@ def main():
             compress_pdf_all_levels(file_path)
         else:
             compress_pdf(file_path, suffix, extra_args, pdf_version)
+            if args.protect:
+                protect_pdf(file_path, password)
 
 
 if __name__ == "__main__":
-    # try:
-    #     main()
-    # finally:
-    #     input("\nPress Enter to exit...")
     main()
     sys.exit(0)

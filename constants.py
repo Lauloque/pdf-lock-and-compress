@@ -1,3 +1,4 @@
+import pathlib
 import shutil
 
 # default Ghostscript executable
@@ -67,3 +68,6 @@ COMPRESSION_OPTIONS = {
         "1.4",
     ),
 }
+
+# Password is stored in a local file excluded from git (see .gitignore)
+PASSWORD_FILE = pathlib.Path(__file__).parent / "owner_password.secret"
