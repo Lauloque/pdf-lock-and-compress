@@ -5,12 +5,7 @@ from constants import COMPRESSION_OPTIONS
 from functions.compress_pdf import compress_pdf
 
 
-def process_pdf(pdf_path: str | pathlib.Path):
-    pdf_path = pathlib.Path(pdf_path)
-    if not pdf_path.exists():
-        print(f"❌ File not found: {pdf_path}")
-        sys.exit(1)
-
+def compress_pdf_all_levels(pdf_path: pathlib.Path):
     print(f"\nProcessing: {pdf_path.name}")
     for key, (
         suffix,
@@ -30,5 +25,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     for pdf in sys.argv[1:]:
-        process_pdf(pdf)
+        pdf_path = pathlib.Path(pdf)
+        if not pdf_path.exists():
+            print(f"❌ File not found: {pdf}")
+            sys.exit(1)
+        compress_pdf_all_levels(pdf_path)
     sys.exit(0)

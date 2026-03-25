@@ -12,4 +12,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pypdf>=4.0.0",
+    "pytest>=9.0.2",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
