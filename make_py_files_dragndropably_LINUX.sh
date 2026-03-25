@@ -26,6 +26,8 @@ for py_file in "${py_files[@]}"; do
     # Desktop file path
     if [ "$base_name" == "main" ]; then
         desktop_file="pdf_compress.desktop"
+    elif [ "$base_name" == "constants" ]; then
+        continue
     else
         desktop_file="${base_name}.desktop"
     fi
