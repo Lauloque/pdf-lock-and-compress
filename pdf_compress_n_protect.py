@@ -1,10 +1,7 @@
 import pathlib
 import sys
 
-try:
-    from pypdf import PdfReader, PdfWriter
-except ImportError:
-    from PyPDF2 import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
 
 from constants import COMPRESSION_OPTIONS, DEFAULT_COMPRESSION
 from main import compress_pdf
