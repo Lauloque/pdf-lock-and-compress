@@ -11,4 +11,5 @@ wheels/
 
 # Others
 *.pdf
+!Sample.pdf
 *.secret

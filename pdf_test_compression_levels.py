@@ -9,7 +9,7 @@ def process_pdf(pdf_path: str | pathlib.Path):
     pdf_path = pathlib.Path(pdf_path)
     if not pdf_path.exists():
         print(f"❌ File not found: {pdf_path}")
-        return
+        sys.exit(1)
 
     print(f"\nProcessing: {pdf_path.name}")
     for key, (
@@ -29,8 +29,6 @@ if __name__ == "__main__":
         print("Drag one or more PDFs onto this script or pass them as arguments.")
         sys.exit(1)
 
-    try:
-        for pdf in sys.argv[1:]:
-            process_pdf(pdf)
-    finally:
-        input("\nPress Enter to exit...")
+    for pdf in sys.argv[1:]:
+        process_pdf(pdf)
+    sys.exit(0)
