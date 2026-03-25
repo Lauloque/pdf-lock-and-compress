@@ -1,7 +1,8 @@
 import pathlib
 import sys
 
-from pdf_compress import COMPRESSION_OPTIONS, compress_pdf
+from constants import COMPRESSION_OPTIONS
+from main import compress_pdf
 
 
 def process_pdf(pdf_path: str | pathlib.Path):

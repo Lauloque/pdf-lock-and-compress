@@ -11,7 +11,7 @@ A small collection of drag-and-drop Python scripts to compress and/or password-p
 
 ## Scripts
 
-**`pdf_compress.py`** — Compress one or more PDFs. Drag files onto it (or pass paths as arguments), pick a compression level, and get compressed copies alongside the originals.
+**`main.py`** — Compress one or more PDFs. Drag files onto it (or pass paths as arguments), pick a compression level, and get compressed copies alongside the originals.
 
 **`pdf_compress_n_protect.py`** — Same as above, but also encrypts the output with AES-256: requires a password to open, and locks all editing. The password is stored in a local `owner_password.secret` file (git-ignored) and only asked for once.
 
@@ -85,7 +85,7 @@ Run `make_py_files_dragndropably_WINDOWS.reg` once (double-click → confirm) to
 ### Command line
 
 ```bash
-python pdf_compress.py file1.pdf file2.pdf
+python main.py file1.pdf file2.pdf
 python pdf_compress_n_protect.py file.pdf
 python pdf_test_compression_levels.py file.pdf
 ```
@@ -114,18 +114,18 @@ curl -Lsf https://astral.sh/uv/install.sh | sh   # Linux/macOS
 # clone and set up
 git clone https://github.com/Lauloque/pdf-lock-and-compress.git
 cd pdf-lock-and-compress
-uv sync
+uv sync --extra dev
 ```
 
 From then on, prefix any Python command with `uv run` to use the project's environment:
 
 ```bash
-uv run pdf_compress.py myfile.pdf
+uv run main.py myfile.pdf
 ```
 
 ### Adding a compression preset
 
-All presets live in the `_ALL_OPTIONS` dict in `pdf_compress.py`. Each entry is a tuple of:
+All presets live in the `_ALL_OPTIONS` dict in `main.py`. Each entry is a tuple of:
 
 ```python
 "key": (

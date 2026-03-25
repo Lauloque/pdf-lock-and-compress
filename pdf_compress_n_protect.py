@@ -1,14 +1,17 @@
-import sys
 import pathlib
+import sys
+
 try:
     from pypdf import PdfReader, PdfWriter
 except ImportError:
     from PyPDF2 import PdfReader, PdfWriter
 
-from pdf_compress import COMPRESSION_OPTIONS, DEFAULT_CHOICE, compress_pdf
+from constants import COMPRESSION_OPTIONS, DEFAULT_COMPRESSION
+from main import compress_pdf
 
 # Password is stored in a local file excluded from git (see .gitignore)
 PASSWORD_FILE = pathlib.Path(__file__).parent / "owner_password.secret"
+
 
 def load_or_ask_password() -> str:
     """Return the owner password from the secrets file, creating it if needed."""
@@ -56,7 +59,9 @@ def protect_pdf(input_path: pathlib.Path, owner_password: str) -> pathlib.Path |
 
 def main():
     if len(sys.argv) < 2:
-        print("Drag one or more PDFs onto this script or pass their paths as arguments.")
+        print(
+            "Drag one or more PDFs onto this script or pass their paths as arguments."
+        )
         sys.exit(1)
 
     owner_password = load_or_ask_password()
@@ -66,12 +71,12 @@ def main():
     # show dialogue
     print("Choose compression level (press Enter for default 'smart'):")
     for key, (suffix, description, _, _) in COMPRESSION_OPTIONS.items():
-        marker = " [default]" if key == DEFAULT_CHOICE else ""
+        marker = " [default]" if key == DEFAULT_COMPRESSION else ""
         print(f"  {key}) {suffix}{marker}: {description}")
 
     choice = input(f"Your choice [{valid_keys[0]}–{valid_keys[-1]}]: ").strip()
     if choice not in COMPRESSION_OPTIONS:
-        choice = DEFAULT_CHOICE
+        choice = DEFAULT_COMPRESSION
 
     suffix, description, extra_args, pdf_version = COMPRESSION_OPTIONS[choice]
     print(f"\nSelected: {suffix} — {description}\n")
