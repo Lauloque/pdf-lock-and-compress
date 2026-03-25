@@ -3,6 +3,6 @@ Type=Application
 Name=Pdf Test Compression Levels
 Comment=Run pdf_test_compression_levels.py
 Icon=text-x-python
-Exec=konsole -e python3 "/media/lauloque/Fenetre/Users/Lauloque/Documents/Repositories/pdf_lock_and_compress/pdf_test_compression_levels.py" %F
+Exec=konsole --hold -e python3 "/media/lauloque/Fenetre/Users/Lauloque/Documents/Repositories/pdf_lock_and_compress/pdf_test_compression_levels.py" %F
 Terminal=true
 Categories=Utility;

@@ -21,7 +21,11 @@ for py_file in "${py_files[@]}"; do
     base_name="${py_file%.py}"
 
     # Create a nice display name (replace underscores/dashes with spaces, capitalize)
-    display_name=$(echo "$base_name" | sed 's/[_-]/ /g' | sed 's/\b\(.\)/\u\1/g')
+    if [ "$base_name" == "main" ]; then
+        display_name="PDF Compress"
+    else
+        display_name=$(echo "$base_name" | sed 's/[_-]/ /g' | sed 's/\b\(.\)/\u\1/g')
+    fi
 
     # Desktop file path
     if [ "$base_name" == "main" ]; then
@@ -30,6 +34,12 @@ for py_file in "${py_files[@]}"; do
         continue
     else
         desktop_file="${base_name}.desktop"
+    fi
+
+    if [ "$base_name" == "pdf_test_compression_levels" ]; then
+        pre_exec="konsole --hold -e python3"
+    else
+        pre_exec="python3"
     fi
 
     # Get absolute path to the Python script
@@ -42,7 +52,7 @@ Type=Application
 Name=${display_name}
 Comment=Run ${py_file}
 Icon=text-x-python
-Exec=konsole --hold -e python3 "${absolute_path}" %F
+Exec=${pre_exec} "${absolute_path}" %F
 Terminal=true
 Categories=Utility;
 EOF

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Pdf Compress
-Comment=Run pdf_compress.py
+Name=PDF Compress
+Comment=Run main.py
 Icon=text-x-python
 Exec=konsole --hold -e python3 "/media/lauloque/Fenetre/Users/Lauloque/Documents/Repositories/pdf_lock_and_compress/main.py" %F
 Terminal=true
