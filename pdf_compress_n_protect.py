@@ -4,7 +4,7 @@ import sys
 from pypdf import PdfReader, PdfWriter
 
 from constants import COMPRESSION_OPTIONS, DEFAULT_COMPRESSION
-from main import compress_pdf
+from functions.compress_pdf import compress_pdf
 
 # Password is stored in a local file excluded from git (see .gitignore)
 PASSWORD_FILE = pathlib.Path(__file__).parent / "owner_password.secret"

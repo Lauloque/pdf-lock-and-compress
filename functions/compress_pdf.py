@@ -1,0 +1,45 @@
+import pathlib
+import subprocess
+import sys
+
+from constants import GHOSTSCRIPT
+
+
+def compress_pdf(
+    input_path: pathlib.Path, suffix: str, extra_args: list, pdf_version: str
+):
+    output_path = input_path.with_name(f"{input_path.stem}_{suffix}.pdf")
+    cmd = [
+        GHOSTSCRIPT,
+        "-sDEVICE=pdfwrite",
+        f"-dCompatibilityLevel={pdf_version}",
+        *extra_args,
+        "-dNOPAUSE",
+        "-dQUIET",
+        "-dBATCH",
+        f"-sOutputFile={output_path}",
+        str(input_path),
+    ]
+    try:
+        subprocess.run(
+            cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE
+        )
+        print(f"✅ Done: '{output_path.name}'")
+        return output_path
+    except subprocess.CalledProcessError as e:
+        stderr_text = e.stderr.decode(errors="ignore") if e.stderr else ""
+        print(f"❌ Could not compress '{input_path.name}'.")
+
+        if (
+            "Could not open the file" in stderr_text
+            or "Permission denied" in stderr_text
+        ):
+            print(
+                "  • The PDF might be open in another program (like Acrobat) or the file/folder is locked."
+            )
+        elif "No such file or directory" in stderr_text:
+            print("  • The PDF file wasn't found in the given path.")
+        else:
+            print("  • An unexpected error occurred while compressing the PDF:")
+            print(e)
+        sys.exit(1)
