@@ -85,4 +85,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+    try:
+        if sys.stdin and sys.stdin.isatty():
+            input("\nDone. Press Enter to close...")
+    except Exception:
+        pass
     sys.exit(0)
