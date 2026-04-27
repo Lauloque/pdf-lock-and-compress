@@ -39,7 +39,16 @@ A small collection of drag-and-drop Python scripts to compress and/or password-p
 
 Ghostscript must be installed and available on your PATH. It is **not** a Python package and cannot be installed via pip.
 
-**Linux:**
+**Linux / MacOS**
+
+For MacOS, or any Linux distro, you can install it through Homebrew package manager (see installation on [brew.sh](https://brew.sh)):
+
+```bash
+brew install ghostscript
+```
+
+Or if you prefer specific distros:
+
 ```bash
 sudo apt install ghostscript        # Debian/Ubuntu/Mint
 sudo dnf install ghostscript        # Fedora
