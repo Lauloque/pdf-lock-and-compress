@@ -168,14 +168,14 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
-    { name = "pypdf" },
+    { name = "pypdf", extra = ["crypto"] },
     { name = "pytest" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "pypdf", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "pypdf", extras = ["crypto"], specifier = ">=4.0.0" },
+    { name = "pypdf", extras = ["crypto"], marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.2" },
 ]
 provides-extras = ["dev"]
