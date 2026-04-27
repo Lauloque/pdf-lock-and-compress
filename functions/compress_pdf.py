@@ -8,7 +8,7 @@ from constants import GHOSTSCRIPT
 def compress_pdf(
     input_path: pathlib.Path, suffix: str, extra_args: list, pdf_version: str
 ):
-    output_path = input_path.with_name(f"{input_path.stem}_{suffix}.pdf")
+    output_path = input_path.with_name(f"{input_path.stem}.{suffix}.pdf")
     cmd = [
         GHOSTSCRIPT,
         "-sDEVICE=pdfwrite",
