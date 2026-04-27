@@ -37,9 +37,9 @@ for py_file in "${py_files[@]}"; do
     fi
 
     if [ "$base_name" == "pdf_test_compression_levels" ]; then
-        pre_exec="konsole --hold -e python3"
+        pre_exec="xdg-terminal-exec --hold -e python3"
     else
-        pre_exec="python3"
+        pre_exec="xdg-terminal-exec --hold -e python3"
     fi
 
     # Get absolute path to the Python script
@@ -53,7 +53,7 @@ Name=${display_name}
 Comment=Run ${py_file}
 Icon=text-x-python
 Exec=${pre_exec} "${absolute_path}" %F
-Terminal=true
+Terminal=false
 Categories=Utility;
 EOF
 
