@@ -13,3 +13,4 @@ wheels/
 *.pdf
 !Sample.pdf
 *.secret
+*.desktop
