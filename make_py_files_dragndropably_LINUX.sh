@@ -36,11 +36,8 @@ for py_file in "${py_files[@]}"; do
         desktop_file="${base_name}.desktop"
     fi
 
-    if [ "$base_name" == "pdf_test_compression_levels" ]; then
-        pre_exec="xdg-terminal-exec --hold -e python3"
-    else
-        pre_exec="xdg-terminal-exec --hold -e python3"
-    fi
+    pre_exec="sh -c 'cd \"${CURRENT_DIR}\" && uv run python \"${absolute_path}\" \"\$@\"; echo; read -p \"Press Enter to close...\"' sh"
+
 
     # Get absolute path to the Python script
     absolute_path="${CURRENT_DIR}/${py_file}"
